@@ -10,70 +10,51 @@ import { Link } from 'expo-router';
 export default function HomeScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#f8c8cfff', dark: '#eeb7bcff' }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/f1.png')}
           style={styles.reactLogo}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title" style={ styles.title }>Selamat Datang!🏎️</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText type="subtitle" >Nama</ThemedText>
         <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
+          Galuh Ayu Cita Rabbany
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
+        <ThemedText type="subtitle" >NIM</ThemedText>
         <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+          23/514562/SV/22380
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText type="subtitle" >Kelas</ThemedText>
         <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+          B
         </ThemedText>
       </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle" >Mata Kuliah</ThemedText>
+        <ThemedText>
+          Praktikum Pemrograman Geospasial: Perangkat Bergerak Lanjut 
+        </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle" >Aplikasi</ThemedText>
+        <ThemedText>
+          Aplikasi ini dijalankan di perangkat <ThemedText type="defaultSemiBold">{Platform.select({
+            ios: 'iOS',
+            android: 'Android',
+            web: 'web',
+          })} </ThemedText> menggunakan React Native dan Expo.
+        </ThemedText>
+      </ThemedView>
+      
     </ParallaxScrollView>
   );
 }
@@ -89,10 +70,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   reactLogo: {
-    height: 178,
+    height: 158,
     width: 290,
     bottom: 0,
-    left: 0,
-    position: 'absolute',
+    top: 10,
+    right: 0,
+    left: 10,
+    position: 'absolute'
+  },
+  title: { 
+    color: 'pink',
+    fontWeight: 'bold',
+    fontSize: 32,
   },
 });

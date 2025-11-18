@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firebase a Leaflet Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+    <script>
+      // Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyAYESvyzOj8rPJkOE2qn94Pm4czkb4PJLY",
+        authDomain: "reactnative-pgpbl2025.firebaseapp.com",
+        databaseURL:
+          "https://reactnative-pgpbl2025-default-rtdb.firebaseio.com",
+        projectId: "reactnative-pgpbl2025",
+        storageBucket: "reactnative-pgpbl2025.firebasestorage.app",
+        messagingSenderId: "770495428833",
+        appId: "1:770495428833:web:fe9c779fec09a1b0791fa0",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      // Initialize map
+      const map = L.map("map").setView([-7.7956, 110.3695], 13);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Database reference
+      const pointsRef = database.ref("/points");
+
+      // ===========================
+      // Delete Point Function
+      // ===========================
+      function deletePoint(key) {
+        if (confirm("Yakin akan menghapus point ini?")) {
+          pointsRef.child(key).remove();
+          window.location.reload();
+        }
+      }
+
+      // Read and display markers
+      pointsRef.on(
+        "value",
+        (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            Object.keys(data).forEach((key) => {
+              const point = data[key];
+
+              if (point.coordinates) {
+                point.coordinates = point.coordinates
+                  .split(",")
+                  .map(parseFloat);
+
+                const marker = L.marker(point.coordinates).addTo(map);
+
+                // ===========================
+                // Popup with delete button
+                // ===========================
+                const popup = `
+                  ${point.name}<br>
+                  ${point.coordinates}<br>
+                  <button onclick="deletePoint('${key}')">
+                    <i class="fa-solid fa-trash"></i> Delete
+                  </button>
+                `;
+
+                marker.bindPopup(popup);
+              }
+            });
+          }
+        },
+        (error) => {
+          console.log("Read failed: " + error.name);
+        }
+      );
+    </script>
+  </body>
+</html>
