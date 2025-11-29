@@ -6,23 +6,32 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
-  Linking, Alert,
+  Alert,
+  ImageBackground,
+  Text,
 } from "react-native";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, remove } from "firebase/database";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-type PointItem = {
+type RestoItem = {
   id: string;
   name: string;
-  coordinates: string;
+  category: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  accuracy?: string;
+  open_hours: string;
+  price_range: string;
+  menu_top: string;
 };
 
 type SectionData = {
   title: string;
-  data: PointItem[];
+  data: RestoItem[];
 };
 
 export default function LokasiScreen() {
@@ -38,169 +47,243 @@ export default function LokasiScreen() {
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+  const router = useRouter();
 
   const [sections, setSections] = useState<SectionData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const handlePress = (coordinates: string) => {
-    const [latitude, longitude] = coordinates
-      .split(",")
-      .map((coord) => coord.trim());
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-    Linking.openURL(url);
+  const openInMaps = (lat: string, long: string) => {
+    router.push({
+      pathname: "/gmap",
+      params: { latitude: lat, longitude: long },
+    });
   };
 
-  // if running on ios or android platform
+  const handleEdit = (item: RestoItem) => {
+    router.push({ pathname: "/formeditlocation", params: item });
+  };
+
   const handleDelete = (id: string) => {
-    Alert.alert(
-      "Hapus Lokasi",
-      "Apakah Anda yakin ingin menghapus lokasi ini?",
-      [
-        {
-          text: "Batal",
-          style: "cancel",
-        },
-        {
-          text: "Hapus",
-          onPress: () => {
-            const pointRef = ref(db, `points/${id}`);
-            remove(pointRef);
-          },
-          style: "destructive",
-        },
-      ]
-    );
+    Alert.alert("Hapus Data", "Yakin ingin menghapus restoran ini?", [
+      { text: "Batal", style: "cancel" },
+      {
+        text: "Hapus",
+        style: "destructive",
+        onPress: () => remove(ref(db, `resto_locations/${id}`)),
+      },
+    ]);
   };
 
   useEffect(() => {
-    const pointsRef = ref(db, "points/");
-
+    const restoRef = ref(db, "resto_locations/");
     const unsubscribe = onValue(
-      pointsRef,
+      restoRef,
       (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          const pointsArray = Object.keys(data).map((key) => ({
+          const array = Object.keys(data).map((key) => ({
             id: key,
             ...data[key],
           }));
-
-          const formattedData = [
-            {
-              title: "Lokasi Tersimpan",
-              data: pointsArray,
-            },
-          ];
-          setSections(formattedData);
-        } else {
-          setSections([]);
-        }
+          setSections([{ title: "Our Recommendations", data: array }]);
+        } else setSections([]);
         setLoading(false);
       },
-      (error) => {
-        console.error(error);
+      (err) => {
+        console.error(err);
         setLoading(false);
       }
     );
-
     return () => unsubscribe();
   }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    setTimeout(() => setRefreshing(false), 900);
   }, []);
 
   if (loading) {
     return (
-      <ThemedView style={styles.container}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#00ff99" />
+      </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {sections.length > 0 ? (
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.itemRow}>
-              <TouchableOpacity
-                style={styles.item}
-                onPress={() => handlePress(item.coordinates)}
+    <ImageBackground
+      source={require("@/assets/images/bgbm.jpg")}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
+      <LinearGradient
+        colors={["rgba(216, 243, 220, 0.9)", "rgba(82, 183, 136, 0.8)"]}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.container}>
+          <SectionList
+            sections={sections}
+            keyExtractor={(item) => item.id}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            renderSectionHeader={({ section: { title } }) => (
+              <LinearGradient
+                colors={["rgba(216,243,220,0.7)", "rgba(82,183,136,0.5)"]}
+                style={styles.headerCard}
               >
-                <ThemedText style={styles.itemName}>{item.name}</ThemedText>
-                <ThemedText>{item.coordinates}</ThemedText>
-              </TouchableOpacity>
+                <Text style={styles.headerCardText}>{title}</Text>
+              </LinearGradient>
+            )}
+            renderItem={({ item }) => (
+              <View style={styles.cardWrapper}>
+                <LinearGradient
+                  colors={["rgba(216,243,220,0.6)", "rgba(82,183,136,0.3)"]}
+                  style={styles.card}
+                >
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+                  <Text style={styles.cardCategory}>{item.category}</Text>
+                  <Text style={styles.cardAddress}>{item.address}</Text>
 
-              <TouchableOpacity
-                onPress={() => handleDelete(item.id)}
-                style={styles.deleteButton}
-              >
-                <MaterialIcons name="delete" size={28} color="red" />
-              </TouchableOpacity>
-            </View>
-          )}
-          renderSectionHeader={({ section: { title } }) => (
-            <ThemedText style={styles.header}>{title}</ThemedText>
-          )}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
-      ) : (
-        <ThemedView style={styles.container}>
-          <ThemedText>Tidak ada data lokasi tersimpan.</ThemedText>
-        </ThemedView>
-      )}
-    </View>
+                  <View style={styles.detailRow}>
+                    <MaterialIcons
+                      name="location-pin"
+                      size={16}
+                      color="#003d33"
+                    />
+                    <Text style={styles.cardDetail}>
+                      {item.latitude}, {item.longitude}
+                    </Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <MaterialIcons name="gps-fixed" size={16} color="#003d33" />
+                    <Text style={styles.cardDetail}> {item.accuracy || "-"}</Text>
+                  </View>
+
+                  <View style={styles.infoRowSingle}>
+                    <MaterialIcons name="access-time" size={16} color="#003d33" />
+                    <Text style={styles.infoText}> {item.open_hours}</Text>
+                  </View>
+
+                  <View style={styles.infoRowSingle}>
+                    <MaterialIcons name="attach-money" size={16} color="#003d33" />
+                    <Text style={styles.infoText}> {item.price_range}</Text>
+                  </View>
+
+                  <View style={styles.infoRowSingle}>
+                    <MaterialIcons name="star" size={16} color="#FFD700" />
+                    <Text style={styles.infoText}> {item.menu_top}</Text>
+                  </View>
+
+                  <View style={styles.actionsInsideCard}>
+                    <TouchableOpacity
+                      style={[styles.actionBtn, { backgroundColor: "#4caf50" }]}
+                      onPress={() => handleEdit(item)}
+                    >
+                      <MaterialIcons name="edit" size={20} color="#003d33" />
+                      <Text style={styles.actionText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.actionBtn, { backgroundColor: "#ff5252" }]}
+                      onPress={() => handleDelete(item.id)}
+                    >
+                      <MaterialIcons name="delete" size={20} color="#fff" />
+                      <Text style={styles.actionText}>Hapus</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.actionBtn, { backgroundColor: "#00bcd4" }]}
+                      onPress={() => openInMaps(item.latitude, item.longitude)}
+                    >
+                      <MaterialIcons name="map" size={20} color="#fff" />
+                      <Text style={styles.actionText}>Maps</Text>
+                    </TouchableOpacity>
+                  </View>
+                </LinearGradient>
+              </View>
+            )}
+          />
+        </View>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 22,
-    backgroundColor: "#f2f2f2",
+  container: { flex: 1, paddingBottom: 20 },
+  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+
+  headerCard: {
+    padding: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 24,
+    shadowColor: "#52b788",
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  headerCardText: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#003d33",
+    textAlign: "center",
+    letterSpacing: 1,
   },
 
-  // Row wrapper untuk item + delete icon
-  itemRow: {
+  cardWrapper: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+  },
+
+  card: {
+    padding: 18,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#52b788",
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#145c3d",
+    marginBottom: 2,
+  },
+  cardCategory: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1b4332",
+    marginBottom: 4,
+  },
+  cardAddress: { fontSize: 13, color: "#2d6a4f", marginBottom: 8 },
+  cardDetail: { fontSize: 13, color: "#2d6a4f" },
+
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  infoRowSingle: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  infoText: {
+    fontSize: 13,
+    color: "#2d6a4f",
+    fontWeight: "600",
+  },
+
+  actionsInsideCard: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 12,
+  },
+  actionBtn: {
+    flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
-
-  // Card lokasi
-  item: {
-    backgroundColor: "#f64b4bff",
-    padding: 16,
-    marginVertical: 8,
-    marginLeft: 16,
-    borderRadius: 12,
-    flex: 1,
-  },
-
-  itemName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    backgroundColor: "#000",
-    color: "#fff",
-    padding: 16,
-  },
-
-  deleteButton: {
-    padding: 10,
-    marginRight: 16,
-  },
+  actionText: { color: "#fff", fontSize: 13, marginLeft: 6 },
 });

@@ -16,13 +16,14 @@ type IconSymbolName = keyof typeof MAPPING;
  */
 const MAPPING = {
   'house.fill': 'home-mini',
-  'paperplane.fill': 'explore',
+  'paperplane.fill': 'notes',
   'plus.circle.fill': 'add',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-  'graduationcap.fill': 'school',
   'map.fill': 'map',
-  'location.fill': 'place', 
+  'map': 'navigation',
+  'location.fill': 'local-dining', 
+  'square.and.pencil': 'add-location',
 } as IconMapping;
 
 /**

@@ -12,15 +12,15 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Beranda",
+          title: "Home",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -30,26 +30,25 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Explore",
+          title: "Notes",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
         }}
       />
-
       <Tabs.Screen
-        name="mahasiswa"
+        name="forminputlocation"
         options={{
-          title: "Mahasiswa",
+          title: "Add Place",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="graduationcap.fill" color={color} />
+            <IconSymbol size={28} name="square.and.pencil" color={color} />
           ),
         }}
       />
-      <Tabs.Screen
+       <Tabs.Screen
         name="lokasi"
         options={{
-          title: "Lokasi",
+          title: "Food",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="location.fill" color={color} />
           ),
@@ -58,9 +57,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="gmap"
         options={{
-          title: "Gmap API",
+          title: "Navigation",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="map.fill" color={color} />
+            <IconSymbol size={28} name="map" color={color} />
           ),
         }}
       />
@@ -68,7 +67,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="mapwebview"
         options={{
-          title: "Leaflet Map",
+          title: "Map",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="map.fill" color={color} />
           ),

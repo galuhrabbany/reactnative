@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "reactnative",
+    "name": "Makan Application",
     "slug": "reactnative",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/makanlogo.png",
     "scheme": "reactnative",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
