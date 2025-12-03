@@ -32,7 +32,7 @@ export default function TabLayout() {
         options={{
           title: "Notes",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+            <IconSymbol size={28} name="text.book.closed" color={color} />
           ),
         }}
       />
@@ -41,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: "Add Place",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="square.and.pencil" color={color} />
+            <IconSymbol size={28} name="pin.fill" color={color} />
           ),
         }}
       />
@@ -50,10 +50,11 @@ export default function TabLayout() {
         options={{
           title: "Food",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="location.fill" color={color} />
+            <IconSymbol size={28} name="fork.knife" color={color} />
           ),
         }}
       />
+
       <Tabs.Screen
         name="gmap"
         options={{

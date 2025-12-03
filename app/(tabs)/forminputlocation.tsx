@@ -114,7 +114,7 @@ const App = () => {
           style={{ flex: 1 }}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <Stack.Screen options={{ title: "Form Lokasi Restoran" }} />
+            <Stack.Screen options={{ title: "Add Place" }} />
 
             <KeyboardAvoidingView
               style={{ flex: 1 }}
