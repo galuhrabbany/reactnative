@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   Alert,
   ImageBackground,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -50,51 +53,62 @@ export default function AddFood() {
         style={{ flex: 1 }}
         resizeMode="cover"
       >
-        <LinearGradient
-          colors={["rgba(216,243,220,0.9)", "rgba(82,183,136,0.85)"]}
-          style={styles.container}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <View style={styles.card}>
-            <Text style={styles.title}>Tambah Catatan Baru</Text>
-            <Text style={styles.subtitle}>
-              Isi detail makanan dengan lengkap
-            </Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nama makanan"
-              placeholderTextColor="#8cad98"
-              value={nama}
-              onChangeText={setNama}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Kategori"
-              placeholderTextColor="#8cad98"
-              value={kategori}
-              onChangeText={setKategori}
-            />
-
-            <TextInput
-              style={[styles.input, { height: 120 }]}
-              placeholder="Deskripsi"
-              placeholderTextColor="#8cad98"
-              value={desc}
-              onChangeText={setDesc}
-              multiline
-            />
-
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
             <LinearGradient
-              colors={["#2d6a4f", "#1b4332", "#081c15"]}
-              style={styles.button}
+              colors={["rgba(216,243,220,0.9)", "rgba(82,183,136,0.85)"]}
+              style={styles.container}
             >
-              <TouchableOpacity onPress={saveFood} style={styles.buttonWrap}>
-                <Text style={styles.buttonText}>Simpan</Text>
-              </TouchableOpacity>
+              <View style={styles.card}>
+                <Text style={styles.title}>Tambah Catatan Baru</Text>
+                <Text style={styles.subtitle}>
+                  Isi detail makanan dengan lengkap
+                </Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nama makanan"
+                  placeholderTextColor="#8cad98"
+                  value={nama}
+                  onChangeText={setNama}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Kategori"
+                  placeholderTextColor="#8cad98"
+                  value={kategori}
+                  onChangeText={setKategori}
+                />
+
+                <TextInput
+                  style={[styles.input, { height: 120 }]}
+                  placeholder="Deskripsi"
+                  placeholderTextColor="#8cad98"
+                  value={desc}
+                  onChangeText={setDesc}
+                  multiline
+                />
+
+                <LinearGradient
+                  colors={["#2d6a4f", "#1b4332", "#081c15"]}
+                  style={styles.button}
+                >
+                  <TouchableOpacity onPress={saveFood} style={styles.buttonWrap}>
+                    <Text style={styles.buttonText}>Simpan</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </View>
             </LinearGradient>
-          </View>
-        </LinearGradient>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </ImageBackground>
     </>
   );

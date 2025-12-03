@@ -7,14 +7,15 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  Platform,
 } from "react-native";
-import MapView, { Marker, Callout, MapType } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
-import { initializeApp } from "firebase/app";
+
+import MapView, { Marker, MapType, Region } from "react-native-maps";
+import { initializeApp, getApps } from "firebase/app";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 type MarkerType = {
   id: string;
@@ -22,8 +23,6 @@ type MarkerType = {
   latitude: number;
   longitude: number;
 };
-
-const GOOGLE_MAPS_APIKEY = "YOUR_GOOGLE_MAPS_API_KEY"; // Ganti dengan key Anda
 
 const firebaseConfig = {
   apiKey: "AIzaSyAYESvyzOj8rPJkOE2qn94Pm4czkb4PJLY",
@@ -35,98 +34,159 @@ const firebaseConfig = {
   appId: "1:770495428833:web:fe9c779fec09a1b0791fa0",
 };
 
-const app = initializeApp(firebaseConfig);
+// ✅ cegah firebase double initialize
+const app =
+  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getDatabase(app);
 
 export default function MapScreen() {
   const [markers, setMarkers] = useState<MarkerType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [userLocation, setUserLocation] = useState<Region | null>(null);
   const [mapType, setMapType] = useState<MapType>("standard");
-  const [selectedMarker, setSelectedMarker] = useState<MarkerType | null>(null);
 
   const mapRef = useRef<MapView>(null);
 
+  // ✅ ambil parameter dari lokasi.tsx (kalau ada)
+  const { latitude, longitude, name } = useLocalSearchParams();
+
   useEffect(() => {
-    // Get user location
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission denied", "Cannot access location");
-        return;
+    const getUserLocation = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== "granted") {
+          Alert.alert("Izin ditolak", "Aplikasi membutuhkan akses lokasi");
+          setLoading(false);
+          return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
+
+        const region: Region = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.01,
+        };
+
+        setUserLocation(region);
+
+        setTimeout(() => {
+          mapRef.current?.animateToRegion(region, 1000);
+        }, 500);
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Error", "Gagal mengambil lokasi");
       }
-      let location = await Location.getCurrentPositionAsync({});
-      setUserLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
+    };
 
-      // Pindahkan map ke lokasi pengguna saat pertama load
-      mapRef.current?.animateToRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.02,
-        longitudeDelta: 0.01,
-      });
-    })();
+    getUserLocation();
 
+    // 🔥 Ambil data dari Firebase
     const restoRef = ref(db, "resto_locations/");
 
-    const unsubscribe = onValue(
-      restoRef,
-      (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const parsedMarkers: MarkerType[] = Object.keys(data)
-            .map((key) => {
-              const item = data[key];
-              const lat = parseFloat(item.latitude);
-              const long = parseFloat(item.longitude);
-              if (isNaN(lat) || isNaN(long)) return null;
-              return { id: key, name: item.name, latitude: lat, longitude: long };
-            })
-            .filter((m): m is MarkerType => m !== null);
+    const unsubscribe = onValue(restoRef, (snapshot) => {
+      const data = snapshot.val();
 
-          setMarkers(parsedMarkers);
-        } else setMarkers([]);
-        setLoading(false);
-      },
-      (error) => {
-        console.error(error);
-        setLoading(false);
+      if (data) {
+        const parsedMarkers: MarkerType[] = Object.keys(data)
+          .map((key) => {
+            const item = data[key];
+            const lat = parseFloat(item.latitude);
+            const lng = parseFloat(item.longitude);
+
+            if (isNaN(lat) || isNaN(lng)) return null;
+
+            return {
+              id: key,
+              name: item.name ?? "Unknown",
+              latitude: lat,
+              longitude: lng,
+            };
+          })
+          .filter((m): m is MarkerType => m !== null);
+
+        setMarkers(parsedMarkers);
+      } else {
+        setMarkers([]);
       }
-    );
+
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, []);
 
-  const openDirections = (lat: number, long: number) => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`;
-    Linking.openURL(url);
-  };
+  useEffect(() => {
+    if (latitude && longitude) {
+      const region: Region = {
+        latitude: parseFloat(latitude as string),
+        longitude: parseFloat(longitude as string),
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      };
 
-  const toggleMapType = () => {
-    setMapType((prev) =>
-      prev === "standard" ? "satellite" : prev === "satellite" ? "hybrid" : "standard"
-    );
-  };
+      setTimeout(() => {
+        mapRef.current?.animateToRegion(region, 900);
+      }, 500);
+    }
+  }, [latitude, longitude]);
 
-  const goToUserLocation = () => {
-    if (userLocation && mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: userLocation.latitude,
-        longitude: userLocation.longitude,
-        latitudeDelta: 0.02,
-        longitudeDelta: 0.01,
+  // ✅ Buka Google Maps Navigation sesuai nama titik
+  const openDirections = (lat: number, lng: number, name: string) => {
+    const url = Platform.select({
+      ios: `maps:0,0?q=${encodeURIComponent(name)}@${lat},${lng}`,
+      android: `google.navigation:q=${lat},${lng}(${encodeURIComponent(name)})`,
+    });
+
+    if (url) {
+      Linking.openURL(url).catch((err) => {
+        console.error("Gagal membuka maps:", err);
+        Alert.alert("Error", "Tidak dapat membuka Google Maps");
       });
     }
   };
 
-  if (loading || !userLocation) {
+  const toggleMapType = () => {
+    setMapType((prev) =>
+      prev === "standard"
+        ? "satellite"
+        : prev === "satellite"
+        ? "hybrid"
+        : "standard"
+    );
+  };
+
+  const goToUserLocation = () => {
+    if (!userLocation) return;
+
+    mapRef.current?.animateToRegion(
+      {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.01,
+      },
+      1000
+    );
+  };
+
+  if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
-        <Text>Loading map data...</Text>
+        <Text>Memuat peta...</Text>
+      </View>
+    );
+  }
+
+  if (!userLocation) {
+    return (
+      <View style={styles.container}>
+        <Text>Membaca data...</Text>
       </View>
     );
   }
@@ -136,69 +196,59 @@ export default function MapScreen() {
       <MapView
         ref={mapRef}
         style={styles.map}
-        initialRegion={{
-          latitude: userLocation.latitude,
-          longitude: userLocation.longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.01,
-        }}
+        initialRegion={userLocation}
         mapType={mapType}
         showsUserLocation
+        showsMyLocationButton={false}
       >
         {markers.map((marker) => (
           <Marker
             key={marker.id}
-            coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-            onPress={() => setSelectedMarker(marker)}
-          >
-            <Callout tooltip>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle}>{marker.name}</Text>
-                <TouchableOpacity
-                  style={styles.calloutBtn}
-                  onPress={() => openDirections(marker.latitude, marker.longitude)}
-                >
-                  <MaterialIcons name="directions" size={20} color="#fff" />
-                  <Text style={styles.calloutBtnText}>Rute</Text>
-                </TouchableOpacity>
-              </View>
-            </Callout>
-          </Marker>
-        ))}
-
-        {selectedMarker && userLocation && (
-          <MapViewDirections
-            origin={userLocation}
-            destination={{ latitude: selectedMarker.latitude, longitude: selectedMarker.longitude }}
-            apikey={GOOGLE_MAPS_APIKEY}
-            strokeWidth={4}
-            strokeColor="#00bcd4"
-            mode="DRIVING"
+            coordinate={{
+              latitude: marker.latitude,
+              longitude: marker.longitude,
+            }}
+            title={marker.name}
+            description="Ketuk untuk navigasi"
+            onPress={() =>
+              openDirections(marker.latitude, marker.longitude, marker.name)
+            }
           />
-        )}
+        ))}
       </MapView>
 
-      {/* FAB untuk tambah lokasi */}
-      <TouchableOpacity style={styles.fab} onPress={() => router.push("/forminputlocation")}>
-        <FontAwesome name="plus" size={24} color="white" />
+      {/* Tambah lokasi */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/forminputlocation")}
+      >
+        <FontAwesome name="plus" size={22} color="white" />
       </TouchableOpacity>
 
-      {/* Tombol map type */}
+      {/* Ganti map type */}
       <TouchableOpacity style={styles.mapTypeBtn} onPress={toggleMapType}>
-        <MaterialIcons name="layers" size={24} color="#fff" />
+        <MaterialIcons name="layers" size={22} color="white" />
       </TouchableOpacity>
 
-      {/* Tombol home / lokasi pengguna */}
+      {/* Fokus ke user */}
       <TouchableOpacity style={styles.homeBtn} onPress={goToUserLocation}>
-        <MaterialIcons name="my-location" size={24} color="#fff" />
+        <MaterialIcons name="my-location" size={22} color="white" />
       </TouchableOpacity>
     </View>
   );
 }
 
+// ================= STYLE =================
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  map: { width: "100%", height: "100%" },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
   fab: {
     position: "absolute",
     width: 56,
@@ -210,10 +260,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#4caf50",
     borderRadius: 28,
     elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   mapTypeBtn: {
     position: "absolute",
@@ -226,10 +272,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   homeBtn: {
     position: "absolute",
@@ -242,26 +284,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
-  callout: {
-    width: 160,
-    backgroundColor: "rgba(0,0,0,0.85)",
-    borderRadius: 10,
-    padding: 8,
-    alignItems: "center",
-  },
-  calloutTitle: { color: "#fff", fontWeight: "700", marginBottom: 6, textAlign: "center" },
-  calloutBtn: {
-    flexDirection: "row",
-    backgroundColor: "#00bcd4",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  calloutBtnText: { color: "#fff", marginLeft: 4, fontWeight: "600" },
 });

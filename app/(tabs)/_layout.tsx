@@ -45,7 +45,7 @@ export default function TabLayout() {
           ),
         }}
       />
-       <Tabs.Screen
+      <Tabs.Screen
         name="lokasi"
         options={{
           title: "Food",
@@ -67,10 +67,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="mapwebview"
         options={{
-          title: "Map",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="map.fill" color={color} />
-          ),
+          href: null,
         }}
       />
     </Tabs>

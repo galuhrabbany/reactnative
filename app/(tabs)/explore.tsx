@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons } from "@expo/vector-icons"; // TOMBOL DELETE
 
 type FoodItem = {
   nama: string;
@@ -35,9 +37,28 @@ export default function ExploreScreen() {
     }, [])
   );
 
+  const handleDelete = async (index: number) => {
+    Alert.alert(
+      "Hapus Item",
+      "Yakin ingin menghapus catatan kuliner ini?",
+      [
+        { text: "Batal" },
+        {
+          text: "Hapus",
+          style: "destructive",
+          onPress: async () => {
+            const updated = bookmarks.filter((_, i) => i !== index);
+            setBookmarks(updated);
+            await AsyncStorage.setItem("bookmarks", JSON.stringify(updated));
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ImageBackground
-      source={require('@/assets/images/bgbm.jpg')}  // ganti path sesuai gambarmu
+      source={require('@/assets/images/bgbm.jpg')}
       style={{ flex: 1 }}
       resizeMode="cover"
     >
@@ -48,7 +69,6 @@ export default function ExploreScreen() {
         <Text style={styles.header}>Place To Go Yogyakarta</Text>
         <Text style={styles.subHeader}>Catatan Tempat Kuliner Pengguna</Text>
 
-        {/* BUTTON */}
         <LinearGradient
           colors={["#2d6a4f", "#1b4332", "#081c15"]}
           style={styles.addButton}
@@ -71,7 +91,7 @@ export default function ExploreScreen() {
             data={bookmarks}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={{ paddingBottom: 30 }}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <LinearGradient
                 colors={[
                   "rgba(255,255,255,0.7)",
@@ -80,6 +100,14 @@ export default function ExploreScreen() {
                 ]}
                 style={styles.card}
               >
+                {/* Tombol Delete */}
+                <TouchableOpacity
+                  style={styles.deleteBtn}
+                  onPress={() => handleDelete(index)}
+                >
+                  <MaterialIcons name="delete" size={26} color="#d00000" />
+                </TouchableOpacity>
+
                 <Text style={styles.cardTitle}>{item.nama}</Text>
                 <Text style={styles.cardCategory}>Kategori • {item.kategori}</Text>
                 <Text style={styles.cardDesc}>{item.desc}</Text>
@@ -102,7 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "800",
     color: "#1b4332",
-    textAlign: "center",        // DIBUAT TENGAH
+    textAlign: "center",
     marginTop: 15,
     letterSpacing: 0.5,
     textShadowColor: "rgba(0,0,0,0.3)",
@@ -113,7 +141,7 @@ const styles = StyleSheet.create({
   subHeader: {
     fontSize: 16,
     color: "#345e4f",
-    textAlign: "center",        // DIBUAT TENGAH
+    textAlign: "center",
     marginBottom: 25,
   },
 
@@ -161,6 +189,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 18,
     elevation: 10,
+    position: "relative",
+  },
+
+  deleteBtn: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    padding: 4,
   },
 
   cardTitle: {
