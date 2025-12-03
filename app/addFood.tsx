@@ -25,7 +25,7 @@ export default function AddFood() {
   const saveFood = async () => {
     try {
       if (!nama.trim()) {
-        Alert.alert("Nama makanan wajib!");
+        Alert.alert("Nama makanan wajib diisi");
         return;
       }
 
@@ -36,11 +36,11 @@ export default function AddFood() {
       parsed.push(newData);
       await AsyncStorage.setItem("bookmarks", JSON.stringify(parsed));
 
-      Alert.alert("Berhasil!", "Makanan berhasil ditambahkan.");
+      Alert.alert("Berhasil", "Catatan makanan disimpan");
       router.back();
-    } catch (e) {
-      console.log(e);
-      Alert.alert("Error", "Gagal menyimpan");
+    } catch (err) {
+      console.log(err);
+      Alert.alert("Error", "Gagal menyimpan catatan");
     }
   };
 
@@ -63,46 +63,57 @@ export default function AddFood() {
             keyboardShouldPersistTaps="handled"
           >
             <LinearGradient
-              colors={["rgba(216,243,220,0.9)", "rgba(82,183,136,0.85)"]}
+              colors={["rgba(240,248,245,0.95)", "rgba(210,235,220,0.9)"]}
               style={styles.container}
             >
-              <View style={styles.card}>
-                <Text style={styles.title}>Tambah Catatan Baru</Text>
-                <Text style={styles.subtitle}>
-                  Isi detail makanan dengan lengkap
+              <View style={styles.headerWrap}>
+                <Text style={styles.header}>Catatan Baru</Text>
+                <Text style={styles.subHeader}>
+                  Tambahkan detail makanan dengan lengkap
                 </Text>
+              </View>
 
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nama makanan"
-                  placeholderTextColor="#8cad98"
-                  value={nama}
-                  onChangeText={setNama}
-                />
+              <View style={styles.card}>
+                <View style={styles.inputWrap}>
+                  <Text style={styles.label}>Nama Makanan</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Contoh: Nasi Goreng Ayam"
+                    placeholderTextColor="#9bb9a5"
+                    value={nama}
+                    onChangeText={setNama}
+                  />
+                </View>
 
-                <TextInput
-                  style={styles.input}
-                  placeholder="Kategori"
-                  placeholderTextColor="#8cad98"
-                  value={kategori}
-                  onChangeText={setKategori}
-                />
+                <View style={styles.inputWrap}>
+                  <Text style={styles.label}>Kategori</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Contoh: Main Course"
+                    placeholderTextColor="#9bb9a5"
+                    value={kategori}
+                    onChangeText={setKategori}
+                  />
+                </View>
 
-                <TextInput
-                  style={[styles.input, { height: 120 }]}
-                  placeholder="Deskripsi"
-                  placeholderTextColor="#8cad98"
-                  value={desc}
-                  onChangeText={setDesc}
-                  multiline
-                />
+                <View style={styles.inputWrap}>
+                  <Text style={styles.label}>Deskripsi</Text>
+                  <TextInput
+                    style={[styles.input, { height: 120 }]}
+                    placeholder="Tuliskan catatan tambahan..."
+                    placeholderTextColor="#9bb9a5"
+                    value={desc}
+                    onChangeText={setDesc}
+                    multiline
+                  />
+                </View>
 
                 <LinearGradient
-                  colors={["#2d6a4f", "#1b4332", "#081c15"]}
+                  colors={["#1c4532", "#133026", "#0b1a16"]}
                   style={styles.button}
                 >
-                  <TouchableOpacity onPress={saveFood} style={styles.buttonWrap}>
-                    <Text style={styles.buttonText}>Simpan</Text>
+                  <TouchableOpacity onPress={saveFood} style={styles.buttonTouch}>
+                    <Text style={styles.buttonText}>Simpan Catatan</Text>
                   </TouchableOpacity>
                 </LinearGradient>
               </View>
@@ -117,62 +128,67 @@ export default function AddFood() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 22,
-    justifyContent: "center",
+    padding: 26,
+  },
+
+  headerWrap: {
+    marginBottom: 22,
+    alignItems: "center",
+  },
+
+  header: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: "#143d2a",
+  },
+
+  subHeader: {
+    fontSize: 14,
+    color: "#506d61",
+    marginTop: 4,
   },
 
   card: {
-    backgroundColor: "rgba(255,255,255,0.45)",
-    padding: 28,
-    borderRadius: 28,
+    backgroundColor: "rgba(255,255,255,0.55)",
+    padding: 24,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.55)",
-    shadowColor: "#74c69d",
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 12,
+    borderColor: "rgba(255,255,255,0.7)",
+    shadowColor: "#1a3c31",
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
   },
 
-  title: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#1b4332",
-    textAlign: "center",
+  inputWrap: {
+    marginBottom: 18,
+  },
+
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1f4d39",
     marginBottom: 6,
   },
 
-  subtitle: {
-    fontSize: 14,
-    textAlign: "center",
-    color: "#52796f",
-    marginBottom: 22,
-  },
-
   input: {
-    backgroundColor: "rgba(255,255,255,0.7)",
-    padding: 16,
-    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.75)",
+    padding: 14,
+    borderRadius: 14,
     fontSize: 16,
-    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#b7e4c7",
-    shadowColor: "#95d5b2",
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
+    borderColor: "#b9dcc9",
+    elevation: 3,
   },
 
   button: {
-    borderRadius: 18,
     marginTop: 10,
-    shadowColor: "#1b4332",
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 7,
+    borderRadius: 20,
+    elevation: 5,
   },
 
-  buttonWrap: {
+  buttonTouch: {
     paddingVertical: 16,
     alignItems: "center",
   },
@@ -181,6 +197,5 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "700",
-    letterSpacing: 0.5,
   },
 });

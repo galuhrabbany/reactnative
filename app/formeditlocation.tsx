@@ -106,16 +106,22 @@ const App = () => {
         resizeMode="cover"
       >
         <LinearGradient
-          colors={["rgba(216,243,220,0.85)", "rgba(82,183,136,0.6)"]}
+          colors={["rgba(216,243,220,0.9)", "rgba(82,183,136,0.7)"]}
           style={{ flex: 1 }}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <Stack.Screen options={{ title: "Form Edit Lokasi Restoran" }} />
-            <ScrollView contentContainerStyle={styles.container}>
-              <LinearGradient
-                colors={["rgba(255,255,255,0.3)", "rgba(82,183,136,0.2)"]}
-                style={styles.card}
-              >
+            <Stack.Screen options={{ title: "Edit Lokasi Restoran" }} />
+
+            <ScrollView
+              contentContainerStyle={styles.container}
+              keyboardShouldPersistTaps="handled"
+            >
+              <View style={styles.card}>
+                <Text style={styles.title}>Edit Lokasi Restoran</Text>
+                <Text style={styles.subtitle}>
+                  Perbarui data sesuai kebutuhan
+                </Text>
+
                 <Input label="Nama Restoran" value={name} onChangeText={setName} placeholder="Contoh: Resto Sunda" />
                 <Input label="Kategori" value={category} onChangeText={setCategory} placeholder="Cafe / Jepang / Sunda" />
                 <Input label="Alamat" value={address} onChangeText={setAddress} placeholder="Alamat lengkap" />
@@ -127,13 +133,13 @@ const App = () => {
                 <Input label="Menu Unggulan" value={menuTop} onChangeText={setMenuTop} placeholder="Ayam Penyet, Kopi Susu, dll" />
 
                 <TouchableOpacity style={styles.btnSecondary} onPress={getCoordinates}>
-                  <Text style={styles.btnSecondaryText}>Get Current Location</Text>
+                  <Text style={styles.btnSecondaryText}>Ambil Lokasi Saat Ini</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.btnPrimary} onPress={handleUpdate}>
-                  <Text style={styles.btnPrimaryText}>Update Data</Text>
+                  <Text style={styles.btnPrimaryText}>Simpan Perubahan</Text>
                 </TouchableOpacity>
-              </LinearGradient>
+              </View>
             </ScrollView>
           </SafeAreaView>
         </LinearGradient>
@@ -150,33 +156,98 @@ type InputProps = {
 };
 
 const Input = ({ label, value, onChangeText, placeholder }: InputProps) => (
-  <View style={{ marginBottom: 14 }}>
+  <View style={{ marginBottom: 18 }}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
-      style={[styles.input, { backgroundColor: "rgba(255,255,255,0.25)", borderColor: "#52b788" }]}
+      style={styles.input}
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      placeholderTextColor="#245c44"
+      placeholderTextColor="#52796f"
     />
   </View>
 );
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  card: { 
-    backgroundColor: "rgba(255,255,255,0.35)",
-    padding: 20,
-    borderRadius: 14,
-    elevation: 4,
-    shadowColor: "#00000040",
+  container: {
+    padding: 22,
   },
-  input: { height: 48, borderWidth: 1, borderRadius: 10, paddingHorizontal: 12 },
-  label: { fontSize: 15, fontWeight: "600", marginBottom: 6, color: "#2d6a4f" },
-  btnSecondary: { backgroundColor: "rgba(82,183,136,0.8)", paddingVertical: 12, borderRadius: 10, marginTop: 12 },
-  btnSecondaryText: { textAlign: "center", color: "white", fontWeight: "700" },
-  btnPrimary: { backgroundColor: "rgba(45,108,79,0.85)", paddingVertical: 12, borderRadius: 10, marginTop: 16 },
-  btnPrimaryText: { textAlign: "center", color: "white", fontWeight: "800" },
+
+  card: {
+    backgroundColor: "rgba(255,255,255,0.45)",
+    padding: 26,
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.55)",
+    shadowColor: "#74c69d",
+    shadowOpacity: 0.25,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+
+  title: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: "#1b4332",
+    textAlign: "center",
+    marginBottom: 6,
+  },
+
+  subtitle: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#52796f",
+    marginBottom: 22,
+  },
+
+  input: {
+    backgroundColor: "rgba(255,255,255,0.7)",
+    padding: 14,
+    borderRadius: 16,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#b7e4c7",
+    shadowColor: "#95d5b2",
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+
+  label: {
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 6,
+    color: "#2d6a4f",
+  },
+
+  btnSecondary: {
+    backgroundColor: "#52b788",
+    paddingVertical: 14,
+    borderRadius: 16,
+    marginTop: 4,
+  },
+
+  btnSecondaryText: {
+    textAlign: "center",
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+
+  btnPrimary: {
+    backgroundColor: "#1b4332",
+    paddingVertical: 16,
+    borderRadius: 16,
+    marginTop: 14,
+  },
+
+  btnPrimaryText: {
+    textAlign: "center",
+    color: "white",
+    fontWeight: "800",
+    fontSize: 17,
+  },
 });
 
 export default App;

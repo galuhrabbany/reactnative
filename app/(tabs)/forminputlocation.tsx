@@ -25,9 +25,9 @@ type InputProps = {
   placeholder?: string;
 };
 
-// ------------------------------------
+// =======================================================
 // MAIN COMPONENT
-// ------------------------------------
+// =======================================================
 const App = () => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -86,6 +86,7 @@ const App = () => {
     })
       .then(() => {
         Alert.alert("Sukses", "Data restoran berhasil disimpan.");
+
         setName("");
         setCategory("");
         setAddress("");
@@ -107,29 +108,32 @@ const App = () => {
       <ImageBackground
         source={require("@/assets/images/bgbm.jpg")}
         style={{ flex: 1 }}
-        resizeMode="cover"
       >
         <LinearGradient
-          colors={["rgba(216, 243, 220, 0.85)", "rgba(82, 183, 136, 0.6)"]}
+          colors={["rgba(210, 240, 218, 0.9)", "rgba(60, 120, 90, 0.65)"]}
           style={{ flex: 1 }}
         >
           <SafeAreaView style={{ flex: 1 }}>
-            <Stack.Screen options={{ title: "Form Input Lokasi Restoran" }} />
+            <Stack.Screen options={{ title: "Form Lokasi Restoran" }} />
 
             <KeyboardAvoidingView
               style={{ flex: 1 }}
               behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
               <ScrollView
-                contentContainerStyle={styles.container}
                 keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.container}
               >
-                <LinearGradient
-                  colors={["rgba(255,255,255,0.3)", "rgba(82,183,136,0.2)"]}
-                  style={styles.card}
-                >
-                  <Text style={styles.title}>Input Data Restoran</Text>
+                {/* HEADER FLOATING */}
+                <View style={styles.headerBox}>
+                  <Text style={styles.headerTitle}>Tambah Data Restoran</Text>
+                  <Text style={styles.headerSub}>
+                    Lengkapi informasi restoran secara detail.
+                  </Text>
+                </View>
 
+                {/* FORM CARD */}
+                <View style={styles.card}>
                   <Input
                     label="Nama Restoran"
                     value={name}
@@ -185,22 +189,21 @@ const App = () => {
                     placeholder="Ayam Penyet, Kopi Susu, dll"
                   />
 
+                  {/* GET LOCATION */}
                   <TouchableOpacity
                     style={styles.btnSecondary}
                     onPress={getCoordinates}
                   >
                     <Text style={styles.btnSecondaryText}>
-                      Get Current Location
+                      Ambil Lokasi Sekarang
                     </Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.btnPrimary}
-                    onPress={saveData}
-                  >
-                    <Text style={styles.btnPrimaryText}>Save Data</Text>
+                  {/* SAVE BUTTON */}
+                  <TouchableOpacity style={styles.btnPrimary} onPress={saveData}>
+                    <Text style={styles.btnPrimaryText}>Simpan</Text>
                   </TouchableOpacity>
-                </LinearGradient>
+                </View>
               </ScrollView>
             </KeyboardAvoidingView>
           </SafeAreaView>
@@ -210,66 +213,116 @@ const App = () => {
   );
 };
 
-// ------------------------------------
-// INPUT COMPONENT
-// ------------------------------------
+// =======================================================
+// REUSABLE INPUT COMPONENT
+// =======================================================
 const Input = ({ label, value, onChangeText, placeholder }: InputProps) => (
-  <View style={{ marginBottom: 14 }}>
+  <View style={{ marginBottom: 16 }}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
-      style={[
-        styles.input,
-        { backgroundColor: "rgba(255,255,255,0.25)", borderColor: "#52b788" },
-      ]}
+      style={styles.input}
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      placeholderTextColor="#245c44"
+      placeholderTextColor="#40665a"
     />
   </View>
 );
 
-// ------------------------------------
+// =======================================================
 // STYLES
-// ------------------------------------
+// =======================================================
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  card: {
-    backgroundColor: "rgba(255,255,255,0.35)",
-    padding: 20,
-    borderRadius: 14,
-    elevation: 4,
-    shadowColor: "#00000040",
-    marginBottom: 30,
+  container: {
+    padding: 16,
+    paddingBottom: 40,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
+
+  headerBox: {
+    padding: 18,
+    backgroundColor: "rgba(255,255,255,0.55)",
+    borderRadius: 18,
     marginBottom: 20,
-    textAlign: "center",
-    color: "#245c44",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  label: { fontSize: 15, fontWeight: "600", marginBottom: 6, color: "#2d6a4f" },
+
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#1f4d39",
+    marginBottom: 4,
+  },
+
+  headerSub: {
+    fontSize: 14,
+    color: "#3f7058",
+  },
+
+  card: {
+    backgroundColor: "rgba(255,255,255,0.4)",
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.6)",
+  },
+
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1e4f3c",
+    marginBottom: 6,
+  },
+
   input: {
     height: 48,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.7)",
     borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    borderColor: "#92d0b3",
   },
+
   btnSecondary: {
-    backgroundColor: "rgba(82,183,136,0.8)",
-    paddingVertical: 12,
-    borderRadius: 10,
+    backgroundColor: "#52b788",
+    paddingVertical: 13,
+    borderRadius: 12,
     marginTop: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  btnSecondaryText: { textAlign: "center", color: "white", fontWeight: "700" },
+
+  btnSecondaryText: {
+    textAlign: "center",
+    color: "white",
+    fontWeight: "700",
+  },
+
   btnPrimary: {
-    backgroundColor: "rgba(45,108,79,0.85)",
-    paddingVertical: 12,
-    borderRadius: 10,
-    marginTop: 16,
+    backgroundColor: "#1b4332",
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 18,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
-  btnPrimaryText: { textAlign: "center", color: "white", fontWeight: "800" },
+
+  btnPrimaryText: {
+    textAlign: "center",
+    color: "white",
+    fontWeight: "800",
+    fontSize: 16,
+  },
 });
 
 export default App;

@@ -62,16 +62,15 @@ export default function LokasiScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const openInMaps = (name: string, lat: string, long: string) => {
-  router.push({
-    pathname: "/gmap",
-    params: {
-      name,
-      latitude: lat,
-      longitude: long,
-    },
-  });
-};
-
+    router.push({
+      pathname: "/gmap",
+      params: {
+        name,
+        latitude: lat,
+        longitude: long,
+      },
+    });
+  };
 
   const handleEdit = (item: RestoItem) => {
     router.push({ pathname: "/formeditlocation", params: item });
@@ -135,7 +134,7 @@ export default function LokasiScreen() {
     >
       <LinearGradient
         colors={["rgba(216,243,220,0.9)", "rgba(82,183,136,0.8)"]}
-        style={{ flex: 1 }}
+        style={styles.wrapper}
       >
         <SectionList
           sections={sections}
@@ -145,64 +144,65 @@ export default function LokasiScreen() {
           }
           contentContainerStyle={styles.container}
           renderSectionHeader={({ section: { title } }) => (
-            <LinearGradient
-              colors={["rgba(216,243,220,0.7)", "rgba(82,183,136,0.5)"]}
-              style={styles.headerCard}
-            >
-              <Text style={styles.headerCardText}>{title}</Text>
-            </LinearGradient>
+            <View style={styles.sectionHeaderWrapper}>
+              <Text style={styles.sectionTitle}>{title}</Text>
+            </View>
           )}
           renderItem={({ item }) => (
             <View style={styles.cardWrapper}>
               <LinearGradient
-                colors={["rgba(216,243,220,0.6)", "rgba(82,183,136,0.3)"]}
+                colors={["rgba(216,243,220,0.8)", "rgba(82,183,136,0.4)"]}
                 style={styles.card}
               >
-                <Text style={styles.cardTitle}>{item.name}</Text>
-                <Text style={styles.cardCategory}>{item.category}</Text>
-                <Text style={styles.cardAddress}>{item.address}</Text>
+                <View style={styles.cardTopRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <Text style={styles.cardCategory}>{item.category}</Text>
+                    <Text style={styles.cardAddress}>{item.address}</Text>
+                  </View>
 
-                <View style={styles.detailRow}>
-                  <MaterialIcons
-                    name="location-pin"
-                    size={16}
-                    color="#003d33"
-                  />
-                  <Text style={styles.cardDetail}>
-                    {item.latitude}, {item.longitude}
-                  </Text>
+                  <View style={styles.badgeWrapper}>
+                    <MaterialIcons name="star" size={20} color="#FFD700" />
+                    <Text style={styles.badgeText}>{item.menu_top}</Text>
+                  </View>
                 </View>
 
-                <View style={styles.detailRow}>
-                  <MaterialIcons name="gps-fixed" size={16} color="#003d33" />
-                  <Text style={styles.cardDetail}>{item.accuracy || "-"}</Text>
+                <View style={styles.infoGrid}>
+                  <View style={styles.infoBox}>
+                    <MaterialIcons name="location-pin" size={16} color="#003d33" />
+                    <Text style={styles.infoTextSmall}>
+                      {item.latitude}, {item.longitude}
+                    </Text>
+                  </View>
+
+                  <View style={styles.infoBox}>
+                    <MaterialIcons name="gps-fixed" size={16} color="#003d33" />
+                    <Text style={styles.infoTextSmall}>
+                      {item.accuracy || "-"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.infoBox}>
+                    <MaterialIcons name="access-time" size={16} color="#003d33" />
+                    <Text style={styles.infoTextSmall}>{item.open_hours}</Text>
+                  </View>
+
+                  <View style={styles.infoBox}>
+                    <MaterialIcons
+                      name="attach-money"
+                      size={16}
+                      color="#003d33"
+                    />
+                    <Text style={styles.infoTextSmall}>{item.price_range}</Text>
+                  </View>
                 </View>
 
-                <View style={styles.infoRowSingle}>
-                  <MaterialIcons name="access-time" size={16} color="#003d33" />
-                  <Text style={styles.infoText}>{item.open_hours}</Text>
-                </View>
-
-                <View style={styles.infoRowSingle}>
-                  <MaterialIcons
-                    name="attach-money"
-                    size={16}
-                    color="#003d33"
-                  />
-                  <Text style={styles.infoText}>{item.price_range}</Text>
-                </View>
-
-                <View style={styles.infoRowSingle}>
-                  <MaterialIcons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.infoText}>{item.menu_top}</Text>
-                </View>
-
-                <View style={styles.actionsInsideCard}>
+                <View style={styles.actionRow}>
                   <TouchableOpacity
                     style={[styles.actionBtn, { backgroundColor: "#4caf50" }]}
                     onPress={() => handleEdit(item)}
                   >
-                    <MaterialIcons name="edit" size={20} color="#fff" />
+                    <MaterialIcons name="edit" size={18} color="#fff" />
                     <Text style={styles.actionText}>Edit</Text>
                   </TouchableOpacity>
 
@@ -210,7 +210,7 @@ export default function LokasiScreen() {
                     style={[styles.actionBtn, { backgroundColor: "#ff5252" }]}
                     onPress={() => handleDelete(item.id)}
                   >
-                    <MaterialIcons name="delete" size={20} color="#fff" />
+                    <MaterialIcons name="delete" size={18} color="#fff" />
                     <Text style={styles.actionText}>Hapus</Text>
                   </TouchableOpacity>
 
@@ -220,7 +220,7 @@ export default function LokasiScreen() {
                       openInMaps(item.name, item.latitude, item.longitude)
                     }
                   >
-                    <MaterialIcons name="map" size={20} color="#fff" />
+                    <MaterialIcons name="map" size={18} color="#fff" />
                     <Text style={styles.actionText}>Maps</Text>
                   </TouchableOpacity>
                 </View>
@@ -235,8 +235,13 @@ export default function LokasiScreen() {
 
 /* ===================== STYLE ===================== */
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    paddingTop: 20,
+  },
+
   container: {
-    paddingBottom: 30,
+    paddingBottom: 40,
   },
 
   centered: {
@@ -245,23 +250,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  headerCard: {
-    padding: 16,
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 24,
+  sectionHeaderWrapper: {
+    paddingHorizontal: 20,
+    paddingVertical: 14,
   },
 
-  headerCardText: {
-    fontSize: 22,
-    fontWeight: "bold",
+  sectionTitle: {
+    fontSize: 26,
+    fontWeight: "800",
     color: "#003d33",
-    textAlign: "center",
   },
 
   cardWrapper: {
-    marginHorizontal: 16,
-    marginVertical: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
   },
 
   card: {
@@ -269,13 +271,23 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#52b788",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+
+  cardTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 14,
   },
 
   cardTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
     color: "#145c3d",
-    marginBottom: 2,
+    marginBottom: 4,
   },
 
   cardCategory: {
@@ -288,52 +300,65 @@ const styles = StyleSheet.create({
   cardAddress: {
     fontSize: 13,
     color: "#2d6a4f",
-    marginBottom: 8,
   },
 
-  cardDetail: {
-    fontSize: 13,
-    color: "#2d6a4f",
+  badgeWrapper: {
+    backgroundColor: "rgba(255,255,255,0.7)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    height: 32,
+  },
+
+  badgeText: {
     marginLeft: 4,
-  },
-
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-
-  infoRowSingle: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-
-  infoText: {
-    fontSize: 13,
-    color: "#2d6a4f",
     fontWeight: "600",
-    marginLeft: 6,
+    color: "#003d33",
+    fontSize: 13,
   },
 
-  actionsInsideCard: {
+  infoGrid: {
+    marginTop: 8,
+    marginBottom: 16,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    columnGap: 20,
+    rowGap: 8,
+  },
+
+  infoBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "45%",
+  },
+
+  infoTextSmall: {
+    marginLeft: 6,
+    fontSize: 13,
+    color: "#003d33",
+  },
+
+  actionRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 14,
   },
 
   actionBtn: {
     flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     borderRadius: 10,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 4,
   },
 
   actionText: {
     color: "#fff",
     fontSize: 13,
-    marginLeft: 6,
     fontWeight: "600",
+    marginLeft: 6,
   },
 });

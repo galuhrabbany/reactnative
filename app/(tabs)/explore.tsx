@@ -11,7 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { MaterialIcons } from "@expo/vector-icons"; // TOMBOL DELETE
+import { MaterialIcons } from "@expo/vector-icons";
 
 type FoodItem = {
   nama: string;
@@ -38,80 +38,76 @@ export default function ExploreScreen() {
   );
 
   const handleDelete = async (index: number) => {
-    Alert.alert(
-      "Hapus Item",
-      "Yakin ingin menghapus catatan kuliner ini?",
-      [
-        { text: "Batal" },
-        {
-          text: "Hapus",
-          style: "destructive",
-          onPress: async () => {
-            const updated = bookmarks.filter((_, i) => i !== index);
-            setBookmarks(updated);
-            await AsyncStorage.setItem("bookmarks", JSON.stringify(updated));
-          },
+    Alert.alert("Hapus Item", "Yakin ingin menghapus catatan kuliner ini?", [
+      { text: "Batal" },
+      {
+        text: "Hapus",
+        style: "destructive",
+        onPress: async () => {
+          const updated = bookmarks.filter((_, i) => i !== index);
+          setBookmarks(updated);
+          await AsyncStorage.setItem("bookmarks", JSON.stringify(updated));
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
     <ImageBackground
-      source={require('@/assets/images/bgbm.jpg')}
+      source={require("@/assets/images/bgbm.jpg")}
       style={{ flex: 1 }}
       resizeMode="cover"
     >
       <LinearGradient
-        colors={["rgba(216, 243, 220, 0.9)", "rgba(82, 183, 136, 0.8)"]}
+        colors={["rgba(216,243,220,0.95)", "rgba(82,183,136,0.9)"]}
         style={styles.container}
       >
-        <Text style={styles.header}>Place To Go Yogyakarta</Text>
-        <Text style={styles.subHeader}>Catatan Tempat Kuliner Pengguna</Text>
+        <View style={styles.headerBox}>
+          <Text style={styles.header}>Place To Go Yogyakarta</Text>
+          <Text style={styles.subHeader}>Catatan Tempat Kuliner Pengguna</Text>
+        </View>
 
-        <LinearGradient
-          colors={["#2d6a4f", "#1b4332", "#081c15"]}
-          style={styles.addButton}
-        >
-          <TouchableOpacity
-            style={styles.addButtonTouchable}
-            onPress={() => router.push("/addFood")}
+        <TouchableOpacity onPress={() => router.push("/addFood")}>
+          <LinearGradient
+            colors={["#40916c", "#1b4332"]}
+            style={styles.addButton}
           >
-            <Text style={styles.addText}>+ Tambah Makanan</Text>
-          </TouchableOpacity>
-        </LinearGradient>
+            <MaterialIcons name="add-circle" size={24} color="#fff" />
+            <Text style={styles.addText}>Tambah Catatan</Text>
+          </LinearGradient>
+        </TouchableOpacity>
 
         {bookmarks.length === 0 ? (
           <View style={styles.emptyBox}>
             <Text style={styles.emptyIcon}>🍽️</Text>
-            <Text style={styles.empty}>Belum ada makanan tersimpan</Text>
+            <Text style={styles.empty}>Belum ada catatan kuliner</Text>
           </View>
         ) : (
           <FlatList
             data={bookmarks}
             keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={{ paddingBottom: 30 }}
+            contentContainerStyle={{ paddingBottom: 40 }}
             renderItem={({ item, index }) => (
-              <LinearGradient
-                colors={[
-                  "rgba(255,255,255,0.7)",
-                  "rgba(255,255,255,0.4)",
-                  "rgba(255,255,255,0.15)",
-                ]}
-                style={styles.card}
-              >
-                {/* Tombol Delete */}
-                <TouchableOpacity
-                  style={styles.deleteBtn}
-                  onPress={() => handleDelete(index)}
+              <View style={styles.cardWrapper}>
+                <LinearGradient
+                  colors={[
+                    "rgba(255,255,255,0.9)",
+                    "rgba(255,255,255,0.65)",
+                  ]}
+                  style={styles.card}
                 >
-                  <MaterialIcons name="delete" size={26} color="#d00000" />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.deleteBtn}
+                    onPress={() => handleDelete(index)}
+                  >
+                    <MaterialIcons name="delete" size={24} color="#d00000" />
+                  </TouchableOpacity>
 
-                <Text style={styles.cardTitle}>{item.nama}</Text>
-                <Text style={styles.cardCategory}>Kategori • {item.kategori}</Text>
-                <Text style={styles.cardDesc}>{item.desc}</Text>
-              </LinearGradient>
+                  <Text style={styles.cardTitle}>{item.nama}</Text>
+                  <Text style={styles.cardCategory}>Kategori • {item.kategori}</Text>
+                  <Text style={styles.cardDesc}>{item.desc}</Text>
+                </LinearGradient>
+              </View>
             )}
           />
         )}
@@ -123,51 +119,49 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 18,
+    paddingTop: 20,
+  },
+
+  headerBox: {
+    alignItems: "center",
+    marginBottom: 15,
   },
 
   header: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "800",
     color: "#1b4332",
     textAlign: "center",
-    marginTop: 15,
-    letterSpacing: 0.5,
-    textShadowColor: "rgba(0,0,0,0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 6,
   },
 
   subHeader: {
-    fontSize: 16,
-    color: "#345e4f",
+    fontSize: 15,
+    color: "#2d6a4f",
     textAlign: "center",
-    marginBottom: 25,
+    marginTop: 4,
   },
 
   addButton: {
-    borderRadius: 18,
-    shadowColor: "#2d6a4f",
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 9,
-    marginBottom: 22,
-  },
-
-  addButtonTouchable: {
-    paddingVertical: 16,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    borderRadius: 14,
+    marginBottom: 26,
+    elevation: 8,
+    shadowColor: "#1b4332",
   },
 
   addText: {
-    fontSize: 18,
-    color: "#fff",
+    fontSize: 17,
     fontWeight: "700",
-    letterSpacing: 0.5,
+    color: "#fff",
+    marginLeft: 8,
   },
 
   emptyBox: {
-    marginTop: 80,
+    marginTop: 90,
     alignItems: "center",
   },
   emptyIcon: {
@@ -176,26 +170,26 @@ const styles = StyleSheet.create({
   },
   empty: {
     fontSize: 16,
-    color: "#345e4f",
+    color: "#2d6a4f",
+  },
+
+  cardWrapper: {
+    marginBottom: 14,
   },
 
   card: {
     padding: 20,
-    marginVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.6)",
-    shadowColor: "#74c69d",
-    shadowOpacity: 0.35,
-    shadowRadius: 18,
-    elevation: 10,
-    position: "relative",
+    borderColor: "rgba(255,255,255,0.7)",
+    elevation: 6,
+    shadowColor: "#40916c",
   },
 
   deleteBtn: {
     position: "absolute",
-    top: 12,
-    right: 12,
+    top: 10,
+    right: 10,
     padding: 4,
   },
 
@@ -203,7 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: "#1b4332",
-    marginBottom: 6,
+    marginBottom: 4,
   },
 
   cardCategory: {
@@ -213,7 +207,7 @@ const styles = StyleSheet.create({
 
   cardDesc: {
     fontSize: 14,
-    color: "#444",
-    marginTop: 8,
+    color: "#333",
+    marginTop: 6,
   },
 });
