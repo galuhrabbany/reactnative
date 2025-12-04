@@ -63,7 +63,7 @@ git clone https://github.com/galuhrabbany/reactnative.git
 Masuk ke folder project:
 
 ```
-cd makan-app
+cd reactnative
 ```
 
 Install dependencies:
