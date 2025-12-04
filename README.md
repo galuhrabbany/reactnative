@@ -1,50 +1,80 @@
-# Welcome to your Expo app 👋
+🍽️ MAKAN
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Map Assistant for Kulinary Areas & Navigation
 
-## Get started
+Aplikasi mobile berbasis React Native untuk mencari lokasi kuliner di Yogyakarta, navigasi ke lokasi melalui Google Maps, serta mencatat kuliner favorit pengguna.
 
-1. Install dependencies
+📖 Deskripsi Produk
 
-   ```bash
-   npm install
-   ```
+MAKAN dirancang untuk membantu pengguna menemukan tempat makan populer maupun hidden gems di Yogyakarta.
+Aplikasi ini juga menawarkan fitur navigasi lokasi dan pencatatan kuliner secara lokal.
 
-2. Start the app
+Fitur yang tersedia:
 
-   ```bash
-   npx expo start
-   ```
+🔍 Pencarian kuliner berdasarkan nama & kategori
 
-In the output, you'll find options to open the app in a
+🗺️ Peta lokasi restoran kuliner (Firebase Realtime Database)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+🚏 Navigasi langsung ke Google Maps
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+📑 Catatan kuliner favorit menggunakan AsyncStorage
 
-## Get a fresh project
+🛠️ CRUD Data (Tambah, Edit, Hapus) restoran
 
-When you're ready, run:
+📊 Statistik kuliner real-time di halaman Home
 
-```bash
-npm run reset-project
-```
+🧩 Komponen Pembangun Produk
+| Komponen      | Teknologi                          |
+| ------------- | ---------------------------------- |
+| UI Framework  | React Native (Expo)                |
+| Maps          | react-native-maps + expo-location  |
+| Backend       | Firebase Realtime Database         |
+| Local Storage | AsyncStorage                       |
+| Router        | Expo Router                        |
+| UI Styling    | Custom Stylesheet + LinearGradient |
+| Embedded Map  | WebView (HTML Local Assets)        |
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+🗂️ Sumber Data
+| Data                       | Sumber                                         |
+| -------------------------- | ---------------------------------------------- |
+| Lokasi restoran (realtime) | Firebase Realtime Database: `resto_locations/` |
+| Catatan kuliner pribadi    | Local Storage (AsyncStorage)                   |
 
-## Learn more
+📱 Halaman Utama Aplikasi
+| Halaman                              | Fungsi                                               |
+| ------------------------------------ | ---------------------------------------------------- |
+| Home (`index.tsx`)                   | Statistik kuliner, rekomendasi restoran, fitur utama |
+| Maps (`Gmap.tsx`)                    | Menampilkan marker restoran dan navigasi             |
+| Tambah Lokasi (`Forminput.tsx`)      | Form tambah data lokasi restoran                     |
+| Edit Lokasi (`formeditlocation.tsx`) | Edit informasi restoran                              |
+| List Lokasi (`lokasi.tsx`)           | Daftar semua restoran (CRUD + lihat di map)          |
+| Catatan Kuliner (`explore.tsx`)      | List catatan kuliner pengguna                        |
+| Tambah Catatan (`addFood.tsx`)       | Form tambah catatan makanan                          |
 
-To learn more about developing your project with Expo, look at the following resources:
+🖼️ Tangkapan Layar
+![WhatsApp Image 2025-12-03 at 17 30 35_b8e53b82](https://github.com/user-attachments/assets/00d5bfef-ed2c-4d49-9d15-5dcd946d8edf)
+![WhatsApp Image 2025-12-03 at 17 30 36_caaa7e34](https://github.com/user-attachments/assets/d6ae12bf-2202-4c8b-93e2-62a579e27a8b)
+![WhatsApp Image 2025-12-03 at 17 30 36_e898f3d8](https://github.com/user-attachments/assets/5817bd45-f943-45bf-a05f-88bf3c8e7544)
+![WhatsApp Image 2025-12-03 at 17 30 36_e878c4a7](https://github.com/user-attachments/assets/d8ea3183-22a0-4812-8c26-07a0340094bb)
+![WhatsApp Image 2025-12-03 at 17 30 37_0cc9dc97](https://github.com/user-attachments/assets/a474c387-9d11-4875-bd6f-d5063a216258)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+🔧 Instalasi & Cara Menjalankan
+# Clone repository
+git clone <URL-repository-GitHub-anda>
 
-## Join the community
+# Masuk folder project
+cd makan-app
 
-Join our community of developers creating universal apps.
+# Install dependencies
+npm install
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Jalankan aplikasi
+expo start
+
+
+📌 Pastikan Firebase sudah dikonfigurasi sesuai firebaseConfig di dalam project.
+
+👨‍💻 Developer
+
+Proyek ini dikembangkan sebagai Tugas PGPBL 2025
+Tema: Sistem Informasi Kuliner Yogyakarta berbasis Lokasi
